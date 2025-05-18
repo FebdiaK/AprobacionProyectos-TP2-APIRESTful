@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,6 @@ using System.Threading.Tasks;
 using AprobacionProyectos.Infrastructure.Data.Configurations;
 using AprobacionProyectos.Domain.Entities;
 using AprobacionProyectos.Infrastructure.Data.Seeders;
-using Microsoft.EntityFrameworkCore;
 
 namespace AprobacionProyectos.Infrastructure.Data
 {

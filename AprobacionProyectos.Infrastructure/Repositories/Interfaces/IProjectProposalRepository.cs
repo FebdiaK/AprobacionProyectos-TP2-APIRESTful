@@ -14,6 +14,8 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
         Task CreateAsync(ProjectProposal projectProposal);
         Task SaveChangesAsync();
 
+        Task<ProjectProposal?> GetProjectProposalByTitle(string title);
+
         Task<ProjectProposal?> GetProjectProposalFullWithId(Guid id); 
     }
 }

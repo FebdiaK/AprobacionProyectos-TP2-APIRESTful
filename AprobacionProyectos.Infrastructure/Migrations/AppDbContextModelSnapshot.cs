@@ -4,19 +4,16 @@ using AprobacionProyectos.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AprobacionProyectos.Migrations
+namespace AprobacionProyectos.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250418063945_UpdateUserConfig")]
-    partial class UpdateUserConfig
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -289,6 +286,10 @@ namespace AprobacionProyectos.Migrations
                         .HasColumnType("int")
                         .HasColumnName("ApproverRoleId");
 
+                    b.Property<int?>("ApproverUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("ApproverUserId");
+
                     b.Property<DateTime?>("DecisionDate")
                         .HasColumnType("datetime2");
 
@@ -305,19 +306,15 @@ namespace AprobacionProyectos.Migrations
                     b.Property<int>("StepOrder")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("ApproverUserId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ApproverRoleId");
 
+                    b.HasIndex("ApproverUserId");
+
                     b.HasIndex("ProjectProposalId");
 
                     b.HasIndex("StatusId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("ProjectApprovalSteps");
                 });
@@ -515,6 +512,11 @@ namespace AprobacionProyectos.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AprobacionProyectos.Domain.Entities.User", "ApproverUser")
+                        .WithMany("ApprovalSteps")
+                        .HasForeignKey("ApproverUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AprobacionProyectos.Domain.Entities.ProjectProposal", "ProjectProposal")
                         .WithMany("ApprovalSteps")
                         .HasForeignKey("ProjectProposalId")
@@ -527,18 +529,13 @@ namespace AprobacionProyectos.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AprobacionProyectos.Domain.Entities.User", "User")
-                        .WithMany("ApprovalSteps")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("ApproverRole");
+
+                    b.Navigation("ApproverUser");
 
                     b.Navigation("ProjectProposal");
 
                     b.Navigation("Status");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AprobacionProyectos.Domain.Entities.ProjectProposal", b =>

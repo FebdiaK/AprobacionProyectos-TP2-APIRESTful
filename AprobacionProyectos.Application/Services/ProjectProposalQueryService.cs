@@ -35,6 +35,10 @@ namespace AprobacionProyectos.Application.Services
             return await _proposalRepository.GetByIdAsync(proposalId);
         }
 
+        public async Task <ProjectProposal?> GetProjectProposalByTitle(string title)
+        {
+            return await _proposalRepository.GetProjectProposalByTitle(title); 
+        }
         public async Task<ProjectProposal?> GetProjectProposalFullWithId(Guid id)
         {
             return await _proposalRepository.GetProjectProposalFullWithId(id);

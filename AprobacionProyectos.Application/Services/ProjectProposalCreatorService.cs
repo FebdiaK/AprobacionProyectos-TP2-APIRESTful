@@ -37,6 +37,9 @@ namespace AprobacionProyectos.Application.Services
 
             proposal.CreatedAt = DateTime.UtcNow;
 
+            var pendingStatus = await _approvalStatusRepository.GetByIdAsync(1);
+            proposal.StatusId = pendingStatus.Id;
+
             await _repository.CreateAsync(proposal);
 
             var rules = await _ruleRepository.GetAllAsync();
@@ -65,14 +68,13 @@ namespace AprobacionProyectos.Application.Services
 
             foreach (var rule in selectedRules) 
             {
-
                 var step = new ProjectApprovalStep  //creo el paso correspondiente a la regla
                 {
                     ProjectProposalId = proposal.Id, // y asigno el id de la propuesta al paso
-                    ApproverRoleId = rule.ApproverRoleId, 
-                    Status = await _approvalStatusRepository.GetByIdAsync(1), //seteando los pasos como pendientes
-                    StepOrder = rule.StepOrder, 
-                    DecisionDate = null, 
+                    ApproverRoleId = rule.ApproverRoleId,
+                    Status = pendingStatus,
+                    StepOrder = rule.StepOrder,
+                    DecisionDate = null,
                     Observations = null
                 };
 

@@ -16,17 +16,16 @@ using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString , sqlOptions =>
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString, sqlOptions =>
 {
     sqlOptions.EnableRetryOnFailure();
-    sqlOptions.MigrationsAssembly("Infrastructure");
+    sqlOptions.MigrationsAssembly("AprobacionProyectos.Infrastructure");
 }));
 
-
-// Add services to the container.
-
-builder.Services.AddControllers();
+// Add services to the container
 
 //repositorios (interfaces e implementaciones)
 builder.Services.AddScoped<IApprovalRuleRepository, ApprovalRuleRepository>();

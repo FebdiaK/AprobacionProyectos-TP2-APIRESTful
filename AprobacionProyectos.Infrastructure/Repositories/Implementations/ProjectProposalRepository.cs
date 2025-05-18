@@ -66,7 +66,21 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
                     .ThenInclude(s => s.ApproverRole)
                 .Include(p => p.ApprovalSteps)
                     .ThenInclude(s => s.Status)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id); 
+        }
+
+        public async Task<ProjectProposal?> GetProjectProposalByTitle(string title)
+        {
+            return await _context.ProjectProposals
+                .Include(p => p.Area)
+                .Include(p => p.Type)
+                .Include(p => p.Status)
+                .Include(p => p.CreatedBy)
+                .Include(p => p.ApprovalSteps)
+                    .ThenInclude(s => s.ApproverRole)
+                .Include(p => p.ApprovalSteps)
+                    .ThenInclude(s => s.Status)
+                .FirstOrDefaultAsync(p => p.Title.ToLower() == title.ToLower());
         }
     }
 }
