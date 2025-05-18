@@ -37,10 +37,10 @@ namespace AprobacionProyectos.Application.Services
 
         public async Task <ProjectProposal?> GetProjectProposalByTitle(string title)
         {
-            return await _proposalRepository.GetProjectProposalByTitle(title); 
+            return await _proposalRepository.GetProjectProposalByTitle(title);   
         }
         public async Task<ProjectProposal?> GetProjectProposalFullWithId(Guid id)
-        {
+        { 
             return await _proposalRepository.GetProjectProposalFullWithId(id);
         }
 
