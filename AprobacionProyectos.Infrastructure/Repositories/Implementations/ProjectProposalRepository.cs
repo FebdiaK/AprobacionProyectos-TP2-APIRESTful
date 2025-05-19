@@ -82,6 +82,20 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
                     .ThenInclude(s => s.Status)
                 .FirstOrDefaultAsync(p => p.Title.ToLower() == title.ToLower());
         }
+
+        public IQueryable<ProjectProposal> GetProjectProposalQueryable()
+        {
+            return   _context.ProjectProposals
+                .Include(p => p.Area)
+                .Include(p => p.Type)
+                .Include(p => p.Status)
+                .Include(p => p.CreatedBy)
+                .Include(p => p.ApprovalSteps)
+                    .ThenInclude(s => s.ApproverUser)
+                .Include(p => p.ApprovalSteps)
+                    .ThenInclude(s => s.ApproverRole)
+                .AsQueryable();
+        }
     }
 }
 

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace AprobacionProyectos.Application.DTOs.EntitiesDTOs
 {
-    public class UserDTO
+    public class UserDto
     {
         public int Id { get; set; }
         public string Name  { get; set; }
         public string Email { get; set; }
-        public ApproverRoleDTO Role { get; set; }
+        public ApproverRoleDto Role { get; set; }
      }
 }

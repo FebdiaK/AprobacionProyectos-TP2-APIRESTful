@@ -10,7 +10,7 @@ using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
 
 namespace AprobacionProyectos.Application.Services
 {
-    public class ProjectProposalQueryService : IProjectProposalQueryService
+    public class ProjectProposalQueryService : IProjectProposalQueryService 
     {
         private readonly IProjectProposalRepository _proposalRepository;
         private readonly IProjectApprovalStepRepository _stepRepository;
@@ -58,6 +58,11 @@ namespace AprobacionProyectos.Application.Services
             if (step == null || step.ApproverUserId == null) return null;
 
             return await _userRepository.GetByIdAsync(step.ApproverUserId.Value);
+        }
+
+        public IQueryable<ProjectProposal> GetProjectProposalQueryable()
+        {
+            return  _proposalRepository.GetProjectProposalQueryable();
         }
     }
 }

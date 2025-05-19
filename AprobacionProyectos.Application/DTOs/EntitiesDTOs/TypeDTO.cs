@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AprobacionProyectos.Application.DTOs.EntitiesDTOs
 {
-    public  class TypeDTO
+    public  class TypeDto
     {
         public int Id { get; set; } 
         public string Name { get; set; } = null!;

@@ -15,5 +15,6 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
         Task SaveChangesAsync();
         Task<ProjectProposal?> GetProjectProposalByTitle(string title); 
         Task<ProjectProposal?> GetProjectProposalFullWithId(Guid id); 
+        IQueryable<ProjectProposal> GetProjectProposalQueryable(); 
     }
 }

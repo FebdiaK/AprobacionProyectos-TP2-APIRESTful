@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace AprobacionProyectos.Application.DTOs.EntitiesDTOs
 {
-    public class ApprovalStepDTO
+    public class ApprovalStepDto
     {
         public long Id { get; set; }
         public int StepOrder { get; set; }
         public DateTime? DecisionDate { get; set; }
         public string? Observations { get; set; }
 
-        public ApproverUserDTO ApproverUser { get; set; } = null!;
-        public ApproverRoleDTO ApproverRole { get; set; } = null!;
-        public StatusDTO Status { get; set; } = null!;
+        public ApproverUserDto ApproverUser { get; set; } = null!;
+        public ApproverRoleDto ApproverRole { get; set; } = null!;
+        public StatusDto Status { get; set; } = null!;
     }
 
 }

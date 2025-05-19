@@ -5,6 +5,7 @@ using AprobacionProyectos.Application.Interfaces;
 using AprobacionProyectos.Domain.Entities;
 using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AprobacionProyectos.Api.Controllers
 {
@@ -56,7 +57,7 @@ namespace AprobacionProyectos.Api.Controllers
                 Id = Guid.NewGuid(),
                 Title = dto.Title,
                 Description = dto.Description,
-                EstimatedAmount = dto.Amount, 
+                EstimatedAmount = dto.Amount,
                 EstimatedDuration = dto.Duration,
                 AreaId = dto.Area,
                 CreatedBy = await _userService.GetUserByIdAsync(dto.User),
@@ -77,45 +78,47 @@ namespace AprobacionProyectos.Api.Controllers
                     Description = proposalCreated.Description,
                     Amount = proposalCreated.EstimatedAmount,
                     Duration = proposalCreated.EstimatedDuration,
-                    Area = new AreaDTO { Id = proposalCreated.Area.Id, Name = proposalCreated.Area.Name },
+                    Area = new AreaDto { Id = proposalCreated.Area.Id, Name = proposalCreated.Area.Name },
 
-                    Status = new StatusDTO { Id = proposalCreated.Status.Id, Name = proposalCreated.Status.Name }, 
+                    Status = new StatusDto { Id = proposalCreated.Status.Id, Name = proposalCreated.Status.Name },
 
-                    Type = new TypeDTO { Id = proposalCreated.Type.Id, Name = proposalCreated.Type.Name },
-                    User = new UserDTO
+                    Type = new TypeDto { Id = proposalCreated.Type.Id, Name = proposalCreated.Type.Name },
+                    User = new UserDto
                     {
                         Id = proposalCreated.CreatedBy.Id,
                         Name = proposalCreated.CreatedBy.Name,
                         Email = proposalCreated.CreatedBy.Email,
-                        Role = new ApproverRoleDTO { 
-                            Id = proposalCreated.CreatedBy.ApproverRole.Id, 
-                            Name = proposalCreated.CreatedBy.ApproverRole.Name },
+                        Role = new ApproverRoleDto
+                        {
+                            Id = proposalCreated.CreatedBy.ApproverRole.Id,
+                            Name = proposalCreated.CreatedBy.ApproverRole.Name
+                        },
                     },
 
-                    Steps = proposalCreated.ApprovalSteps.Select(step => new ApprovalStepDTO
+                    Steps = proposalCreated.ApprovalSteps.Select(step => new ApprovalStepDto
                     {
                         Id = step.Id,
                         StepOrder = step.StepOrder,
                         DecisionDate = step.DecisionDate,
                         Observations = step.Observations,
 
-                        ApproverUser = new ApproverUserDTO
+                        ApproverUser = new ApproverUserDto
                         {
-                            Id = step.ApproverUser?.Id,  
-                            Name = step.ApproverUser?.Name,  
+                            Id = step.ApproverUser?.Id,
+                            Name = step.ApproverUser?.Name,
                             Email = step.ApproverUser?.Email,
-                            Role = new ApproverRoleDTO
+                            Role = new ApproverRoleDto
                             {
-                                Id = step.ApproverUser?.ApproverRole.Id, 
+                                Id = step.ApproverUser?.ApproverRole.Id,
                                 Name = step.ApproverUser?.ApproverRole.Name
                             }
                         },
-                        ApproverRole = new ApproverRoleDTO
+                        ApproverRole = new ApproverRoleDto
                         {
                             Id = step.ApproverRole.Id,
                             Name = step.ApproverRole.Name
                         },
-                        Status = new StatusDTO
+                        Status = new StatusDto
                         {
                             Id = step.Status.Id,
                             Name = step.Status.Name
@@ -127,8 +130,55 @@ namespace AprobacionProyectos.Api.Controllers
             else
             {
                 return NotFound();
-            }       
+            }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProjects(
+            [FromQuery] string? title,
+            [FromQuery] int? status,
+            [FromQuery] int? applicant,
+            [FromQuery] int? approvalUser)
+        {
+            var query = _queryService.GetProjectProposalQueryable();
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                query = query.Where(p => p.Title.ToLower().Contains(title.ToLower()));
+            }
+
+            if (status.HasValue)
+            {
+                query = query.Where(p => p.Status.Id == status.Value);
+            }
+
+            if (applicant.HasValue)
+            {
+                query = query.Where(p => p.CreatedById == applicant.Value);
+            }
+
+            if (approvalUser.HasValue)
+            {
+                query = query.Where(p => p.ApprovalSteps.Any(s => s.ApproverUserId == approvalUser.Value));
+            }
+
+            var result = await query.Select(p => new ProjectGetResponseDto
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Description = p.Description,
+                Amount = p.EstimatedAmount,
+                Duration = p.EstimatedDuration,
+                Area = p.Area.Name,
+                Status = p.Status.Name,
+                Type = p.Type.Name
+            }).ToListAsync();
+
+            return Ok(result);
+
+
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
