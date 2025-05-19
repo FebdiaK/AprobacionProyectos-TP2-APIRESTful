@@ -2,6 +2,7 @@ using AprobacionProyectos.Application.DTOs.EntitiesDTOs;
 using AprobacionProyectos.Application.DTOs.Request;
 using AprobacionProyectos.Application.DTOs.Response;
 using AprobacionProyectos.Application.Interfaces;
+using AprobacionProyectos.Application.Validators;
 using AprobacionProyectos.Domain.Entities;
 using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,7 @@ namespace AprobacionProyectos.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateProjectProposalRequestDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateProjectProposalRequestDto dto) //falta mejorar validacion
         {
             if (!ModelState.IsValid)
             {
@@ -138,8 +139,14 @@ namespace AprobacionProyectos.Api.Controllers
             [FromQuery] string? title,
             [FromQuery] int? status,
             [FromQuery] int? applicant,
-            [FromQuery] int? approvalUser)
+            [FromQuery] int? approvalUser)  //falta la validacion para que se respete el tipado de c/parámetro
         {
+            var validationErrors = ProjectQueryValidator.Validate(title, status, applicant, approvalUser);
+            if (validationErrors.Any())
+            {
+                return BadRequest(new { message = validationErrors });
+            }
+
             var query = _queryService.GetProjectProposalQueryable();
 
             if (!string.IsNullOrWhiteSpace(title))
@@ -175,7 +182,6 @@ namespace AprobacionProyectos.Api.Controllers
             }).ToListAsync();
 
             return Ok(result);
-
 
         }
 
