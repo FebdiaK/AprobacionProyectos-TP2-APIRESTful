@@ -269,17 +269,77 @@ namespace AprobacionProyectos.Api.Controllers
             return Ok(result);
         }
 
+
+
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById([FromRoute] string id)
         {
-            var project = await _queryService.GetProjectProposalFullWithId(id);
+            if (!Guid.TryParse(id, out var guid))
+            {
+                return BadRequest(new { message = "Id inválido" });
+            }
 
+            var proposal = await _queryService.GetProjectProposalFullWithId(guid);
 
+            if (proposal == null)
+                return NotFound(new { message = "Proyecto no encontrado" });
 
-            if (project == null)
-                return NotFound();
+            var result = new ProjectProposalResponseDto
+            {
+                Id = proposal.Id,
+                Title = proposal.Title,
+                Description = proposal.Description,
+                Amount = proposal.EstimatedAmount,
+                Duration = proposal.EstimatedDuration,
+                Area = new AreaDto { Id = proposal.Area.Id, Name = proposal.Area.Name },
 
-            return Ok(project);
+                Status = new StatusDto { Id = proposal.Status.Id, Name = proposal.Status.Name },
+
+                Type = new TypeDto { Id = proposal.Type.Id, Name = proposal.Type.Name },
+                User = new UserDto
+                {
+                    Id = proposal.CreatedBy.Id,
+                    Name = proposal.CreatedBy.Name,
+                    Email = proposal.CreatedBy.Email,
+                    Role = new ApproverRoleDto
+                    {
+                        Id = proposal.CreatedBy.ApproverRole.Id,
+                        Name = proposal.CreatedBy.ApproverRole.Name
+                    },
+                },
+
+                Steps = proposal.ApprovalSteps.Select(step => new ApprovalStepDto
+                {
+                    Id = step.Id,
+                    StepOrder = step.StepOrder,
+                    DecisionDate = step.DecisionDate,
+                    Observations = step.Observations,
+
+                    ApproverUser = new ApproverUserDto
+                    {
+                        Id = step.ApproverUser?.Id,
+                        Name = step.ApproverUser?.Name,
+                        Email = step.ApproverUser?.Email,
+                        Role = new ApproverRoleDto
+                        {
+                            Id = step.ApproverUser?.ApproverRole.Id,
+                            Name = step.ApproverUser?.ApproverRole.Name
+                        }
+                    },
+                    ApproverRole = new ApproverRoleDto
+                    {
+                        Id = step.ApproverRole.Id,
+                        Name = step.ApproverRole.Name
+                    },
+                    Status = new StatusDto
+                    {
+                        Id = step.Status.Id,
+                        Name = step.Status.Name
+                    }
+                }).ToList()
+            };
+            return Ok(result);
         }
     }
 }
