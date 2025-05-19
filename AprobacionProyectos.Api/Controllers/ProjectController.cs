@@ -1,4 +1,4 @@
-using AprobacionProyectos.Application.DTOs.EntitiesDTOs;
+﻿using AprobacionProyectos.Application.DTOs.EntitiesDTOs;
 using AprobacionProyectos.Application.DTOs.Request;
 using AprobacionProyectos.Application.DTOs.Response;
 using AprobacionProyectos.Application.Interfaces;
@@ -17,18 +17,21 @@ namespace AprobacionProyectos.Api.Controllers
         private readonly IProjectProposalCreatorService _creatorService;
         private readonly IProjectProposalQueryService _queryService;
         private readonly IUserService _userService;
+        private readonly IApprovalWorkflowService _approveWorkflowService;
 
         public ProjectController(
             IProjectProposalCreatorService creatorService,
-            IProjectProposalQueryService repository,
-            IUserService userService)
+            IProjectProposalQueryService queryService,
+            IUserService userService,
+            IApprovalWorkflowService approveWorkflowService)
         {
             _creatorService = creatorService;
-            _queryService = repository;
+            _queryService = queryService;
             _userService = userService;
+            _approveWorkflowService = approveWorkflowService;
         }
 
-        [HttpPost]
+        [HttpPost] //criterio 1
         public async Task<IActionResult> Create([FromBody] CreateProjectProposalRequestDto dto) //falta mejorar validacion
         {
             if (!ModelState.IsValid)
@@ -42,15 +45,15 @@ namespace AprobacionProyectos.Api.Controllers
 
                 return BadRequest(new
                 {
-                    message = "Datos del proyecto inv�lidos",
+                    message = "Datos del proyecto inválidos",
                     errors = errores
                 });
             }
-            // Validaci�n: no repetir t�tulos
+            // Validación: no repetir títulos
             var existing = await _queryService.GetProjectProposalByTitle(dto.Title);
             if (existing != null)
             {
-                return Conflict(new { message = "Ya existe un proyecto con ese t�tulo." });
+                return Conflict(new { message = "Ya existe un proyecto con ese título." });
             }
 
             var proposal = new ProjectProposal
@@ -134,12 +137,12 @@ namespace AprobacionProyectos.Api.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet] // criterio 2
         public async Task<IActionResult> GetProjects(
             [FromQuery] string? title,
             [FromQuery] int? status,
             [FromQuery] int? applicant,
-            [FromQuery] int? approvalUser)  //falta la validacion para que se respete el tipado de c/par�metro
+            [FromQuery] int? approvalUser)  //falta la validacion para que se respete el tipado de c/parámetro
         {
             var validationErrors = ProjectQueryValidator.Validate(title, status, applicant, approvalUser);
             if (validationErrors.Any())
@@ -185,6 +188,86 @@ namespace AprobacionProyectos.Api.Controllers
 
         }
 
+        [HttpPost("{id}/decision")] //criterio 3
+        public async Task<IActionResult> MakeDecision(Guid id, [FromBody] DecisionStepRequestDto decision)
+        {
+            if (decision == null || decision.User <= 0 || !(decision.Status == 2 || decision.Status == 3 || decision.Status == 4))
+            {
+                return BadRequest(new { message = "Datos de decisión inválidos" });
+            }
+
+            // Validación opcional para verificar si el proyecto existe
+            var projectProposal =  await _queryService.GetProjectProposalByIdAsync(id);
+            if (projectProposal == null)
+            {
+                return NotFound(new { message = "Proyecto no encontrado" });
+            }
+
+            var success = await _approveWorkflowService.ApproveStepAsync(decision.Id, decision.User, decision.Status , decision.Observation);
+
+            if (!success)
+            {
+                return Conflict(new { message = "El proyecto ya no se encuentra en un estado que permite modificaciones" });
+            }
+
+            var proposal = await _queryService.GetProjectProposalFullWithId(id);
+
+            var result = new ProjectProposalResponseDto
+            {
+                Id = proposal.Id,
+                Title = proposal.Title,
+                Description = proposal.Description,
+                Amount = proposal.EstimatedAmount,
+                Duration = proposal.EstimatedDuration,
+                Area = new AreaDto { Id = proposal.Area.Id, Name = proposal.Area.Name },
+
+                Status = new StatusDto { Id = proposal.Status.Id, Name = proposal.Status.Name },
+
+                Type = new TypeDto { Id = proposal.Type.Id, Name = proposal.Type.Name },
+                User = new UserDto
+                {
+                    Id = proposal.CreatedBy.Id,
+                    Name = proposal.CreatedBy.Name,
+                    Email = proposal.CreatedBy.Email,
+                    Role = new ApproverRoleDto
+                    {
+                        Id = proposal.CreatedBy.ApproverRole.Id,
+                        Name = proposal.CreatedBy.ApproverRole.Name
+                    },
+                },
+
+                Steps = proposal.ApprovalSteps.Select(step => new ApprovalStepDto
+                {
+                    Id = step.Id,
+                    StepOrder = step.StepOrder,
+                    DecisionDate = step.DecisionDate,
+                    Observations = step.Observations,
+
+                    ApproverUser = new ApproverUserDto
+                    {
+                        Id = step.ApproverUser?.Id,
+                        Name = step.ApproverUser?.Name,
+                        Email = step.ApproverUser?.Email,
+                        Role = new ApproverRoleDto
+                        {
+                            Id = step.ApproverUser?.ApproverRole.Id,
+                            Name = step.ApproverUser?.ApproverRole.Name
+                        }
+                    },
+                    ApproverRole = new ApproverRoleDto
+                    {
+                        Id = step.ApproverRole.Id,
+                        Name = step.ApproverRole.Name
+                    },
+                    Status = new StatusDto
+                    {
+                        Id = step.Status.Id,
+                        Name = step.Status.Name
+                    }
+                }).ToList()
+            };
+            return Ok(result);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)

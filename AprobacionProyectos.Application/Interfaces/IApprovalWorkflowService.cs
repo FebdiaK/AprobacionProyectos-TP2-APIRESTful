@@ -8,7 +8,7 @@ namespace AprobacionProyectos.Application.Interfaces
 {
     public interface IApprovalWorkflowService
     {
-        Task<bool> ApproveStepAsync(long stepId, int userId, bool approve, string? observations = null);
+        Task<bool> ApproveStepAsync(long stepId, int userId, int  decisionStatusId, string? observations = null);
 
     }
 }

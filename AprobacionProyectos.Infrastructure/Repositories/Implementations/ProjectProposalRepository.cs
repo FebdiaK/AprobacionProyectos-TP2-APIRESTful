@@ -62,10 +62,14 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
                 .Include(p => p.Type)
                 .Include(p => p.Status)
                 .Include(p => p.CreatedBy)
+                    .ThenInclude(u => u.ApproverRole)
                 .Include(p => p.ApprovalSteps)
                     .ThenInclude(s => s.ApproverRole)
                 .Include(p => p.ApprovalSteps)
                     .ThenInclude(s => s.Status)
+                .Include(p => p.ApprovalSteps)
+                    .ThenInclude(s => s.ApproverUser)
+                        .ThenInclude(u => u.ApproverRole)
                 .FirstOrDefaultAsync(p => p.Id == id); 
         }
 
