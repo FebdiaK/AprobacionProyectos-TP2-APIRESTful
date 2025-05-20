@@ -18,17 +18,20 @@ namespace AprobacionProyectos.Api.Controllers
         private readonly IProjectProposalQueryService _queryService;
         private readonly IUserService _userService;
         private readonly IApprovalWorkflowService _approveWorkflowService;
+        private readonly IProjectProposalUpdateService _updaterService;
 
         public ProjectController(
             IProjectProposalCreatorService creatorService,
             IProjectProposalQueryService queryService,
             IUserService userService,
-            IApprovalWorkflowService approveWorkflowService)
+            IApprovalWorkflowService approveWorkflowService,
+            IProjectProposalUpdateService updaterService)
         {
             _creatorService = creatorService;
             _queryService = queryService;
             _userService = userService;
             _approveWorkflowService = approveWorkflowService;
+            _updaterService = updaterService;
         }
 
         [HttpPost] //criterio 1
@@ -270,9 +273,7 @@ namespace AprobacionProyectos.Api.Controllers
         }
 
 
-
-
-        [HttpGet("{id}")]
+        [HttpGet("{id}")] //criterio 4
         public async Task<IActionResult> GetById([FromRoute] string id)
         {
             if (!Guid.TryParse(id, out var guid))
@@ -340,6 +341,95 @@ namespace AprobacionProyectos.Api.Controllers
                 }).ToList()
             };
             return Ok(result);
+        }
+
+
+        [HttpPatch("{id}")] //criterio 5
+        public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UpdateProjectProposalRequestDto dto)
+        {
+            if (!Guid.TryParse(id, out var guid))
+            {
+                return BadRequest(new { message = "El ID del proyecto no tiene un formato válido." });
+            }
+
+            var validationErrors = ProjectUpdateValidator.Validate(dto.title, dto.description, dto.duration);
+
+            if (validationErrors.Any())
+            {
+                return BadRequest(new { message = "Datos de actualización inválidos" + "\n" + validationErrors });
+            }
+
+            var projectProposal = await _queryService.GetProjectProposalFullWithId(guid);
+
+            if (projectProposal == null)
+            {
+                return NotFound(new { message = "No se encontró un proyecto con ese ID." });
+            }
+
+            if (projectProposal.Status.Id != 4 )  //solo se puede editar un proyecto en estado de observacion(parte de la consigna)
+            {
+                return Conflict(new { message = "El proyecto ya no se encuentra en un estado que permite modificaciones" });
+            }
+
+            //aplico cambios (creé un updater solo para este caso)
+            var updatedProposal = await _updaterService.UpdateProjectProposalAsync(guid, dto.title, dto.description, dto.duration);
+
+            var result = new ProjectProposalResponseDto //creo el response
+            {
+                Id = updatedProposal.Id,
+                Title = updatedProposal.Title,
+                Description = updatedProposal.Description,
+                Amount = updatedProposal.EstimatedAmount,
+                Duration = updatedProposal.EstimatedDuration,
+                Area = new AreaDto { Id = updatedProposal.Area.Id, Name = updatedProposal.Area.Name },
+
+                Status = new StatusDto { Id = updatedProposal.Status.Id, Name = updatedProposal.Status.Name },
+
+                Type = new TypeDto { Id = updatedProposal.Type.Id, Name = updatedProposal.Type.Name },
+                User = new UserDto
+                {
+                    Id = updatedProposal.CreatedBy.Id,
+                    Name = updatedProposal.CreatedBy.Name,
+                    Email = updatedProposal.CreatedBy.Email,
+                    Role = new ApproverRoleDto
+                    {
+                        Id = updatedProposal.CreatedBy.ApproverRole.Id,
+                        Name = updatedProposal.CreatedBy.ApproverRole.Name
+                    },
+                },
+
+                Steps = updatedProposal.ApprovalSteps.Select(step => new ApprovalStepDto
+                {
+                    Id = step.Id,
+                    StepOrder = step.StepOrder,
+                    DecisionDate = step.DecisionDate,
+                    Observations = step.Observations,
+
+                    ApproverUser = new ApproverUserDto
+                    {
+                        Id = step.ApproverUser?.Id,
+                        Name = step.ApproverUser?.Name,
+                        Email = step.ApproverUser?.Email,
+                        Role = new ApproverRoleDto
+                        {
+                            Id = step.ApproverUser?.ApproverRole.Id,
+                            Name = step.ApproverUser?.ApproverRole.Name
+                        }
+                    },
+                    ApproverRole = new ApproverRoleDto
+                    {
+                        Id = step.ApproverRole.Id,
+                        Name = step.ApproverRole.Name
+                    },
+                    Status = new StatusDto
+                    {
+                        Id = step.Status.Id,
+                        Name = step.Status.Name
+                    }
+                }).ToList()
+            };
+            return Ok(result); //y lo retorno
+
         }
     }
 }

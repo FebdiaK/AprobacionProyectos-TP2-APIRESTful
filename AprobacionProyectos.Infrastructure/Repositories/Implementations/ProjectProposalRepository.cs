@@ -50,6 +50,24 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
             await _context.ProjectProposals.AddAsync(proposal);
         }
 
+        public async Task<ProjectProposal?> UpdateAsync(Guid id, string title, string description, int duration)
+        {
+            var proposal = await _context.ProjectProposals.FindAsync(id);
+            if (proposal == null || proposal.Status.Id != 4) 
+            {
+                return null;
+            }
+            proposal.Title = title;
+            proposal.Description = description;
+            proposal.EstimatedDuration = duration;
+
+            _context.ProjectProposals.Update(proposal);
+
+            await _context.SaveChangesAsync();
+
+            return proposal;
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

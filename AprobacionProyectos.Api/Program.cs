@@ -42,14 +42,17 @@ builder.Services.AddScoped<IProjectProposalRepository, ProjectProposalRepository
 builder.Services.AddScoped<IProjectTypeRepository, ProjectTypeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+
 //servicios de aplicacion
 builder.Services.AddScoped<IApprovalStatusService, ApprovalStatusService>();
 builder.Services.AddScoped<IApprovalWorkflowService, ApprovalWorkflowService>();
 builder.Services.AddScoped<IAreaService, AreaService>();
 builder.Services.AddScoped<IProjectProposalCreatorService, ProjectProposalCreatorService>();
 builder.Services.AddScoped<IProjectProposalQueryService, ProjectProposalQueryService>();
+builder.Services.AddScoped<IProjectProposalUpdateService, ProjectProposalUpdateService>();
 builder.Services.AddScoped<IProjectTypeService, ProjectTypeService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

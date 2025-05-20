@@ -68,6 +68,11 @@ namespace AprobacionProyectos.Application.Services
             var proposal = await _proposalRepository.GetByIdAsync(step.ProjectProposalId);
             if (proposal != null)
             {
+                if(decisionStatusId == 4 )
+                {
+                    proposal.StatusId = 4; //seteo el proyecto a observado
+                }
+
                 if (decisionStatusId == 3)
                 {
                     proposal.StatusId = 3; // rechazado
