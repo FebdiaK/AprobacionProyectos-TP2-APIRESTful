@@ -8,6 +8,7 @@ using AprobacionProyectos.Infrastructure.Data;
 using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
 {
     public class AreaRepository : IAreaRepository
@@ -22,6 +23,11 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
         public async Task<List<Area>> GetAllAsync()
         { 
             return await _context.Areas.ToListAsync(); 
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Areas.AnyAsync(a => a.Id == id);
         }
     }
 }

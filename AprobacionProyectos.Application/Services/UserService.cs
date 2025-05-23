@@ -65,5 +65,15 @@ namespace AprobacionProyectos.Application.Services
         {
             return await _userRepository.GetByIdAsync(userId);
         }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _userRepository.GetAllAsync();
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _userRepository.ExistsAsync(id);
+        }
     }
 }

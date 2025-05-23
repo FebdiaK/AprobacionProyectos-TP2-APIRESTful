@@ -10,21 +10,22 @@ using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
 
 namespace AprobacionProyectos.Application.Services
 {
-    public class AreaService : IAreaService
+    public class ApproverRoleService : IApproverRoleService 
     {
-        private readonly IAreaRepository _areaRepository;
-        public AreaService(IAreaRepository areaRepository)
+        private readonly IApproverRoleRepository _approverRoleRepository; 
+        public ApproverRoleService(IApproverRoleRepository approverRoleRepository)
         {
-            _areaRepository = areaRepository;
+            _approverRoleRepository = approverRoleRepository;
         }
-        public async Task<List<Area>> GetAllAreasAsync()
+
+        public async Task<List<ApproverRole>> GetAllApproverRolesAsync()
         {
-            return await _areaRepository.GetAllAsync();
+            return await _approverRoleRepository.GetAllAsync();
         }
 
         public async Task<bool> ExistsAsync(int id)
         {
-            return await _areaRepository.ExistsAsync(id);
+            return await _approverRoleRepository.ExistsAsync(id);
         }
     }
 }

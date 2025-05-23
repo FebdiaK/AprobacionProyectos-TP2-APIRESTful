@@ -13,15 +13,30 @@ using Microsoft.Extensions.DependencyInjection;
 using AprobacionProyectos.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json.Serialization;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using AprobacionProyectos.Application.Validators;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add<ValidateModelAttribute>();
+    })
     .AddJsonOptions(x =>
     {
         x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    }); ;
+    });
+    
+
+builder.Services.AddValidatorsFromAssemblyContaining<ProjectCreateValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProjectDecisionValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProjectQueryValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProjectUpdateValidator>();
+
+
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString, sqlOptions =>
@@ -46,6 +61,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 //servicios de aplicacion
 builder.Services.AddScoped<IApprovalStatusService, ApprovalStatusService>();
 builder.Services.AddScoped<IApprovalWorkflowService, ApprovalWorkflowService>();
+builder.Services.AddScoped<IApproverRoleService, ApproverRoleService>();
 builder.Services.AddScoped<IAreaService, AreaService>();
 builder.Services.AddScoped<IProjectProposalCreatorService, ProjectProposalCreatorService>();
 builder.Services.AddScoped<IProjectProposalQueryService, ProjectProposalQueryService>();

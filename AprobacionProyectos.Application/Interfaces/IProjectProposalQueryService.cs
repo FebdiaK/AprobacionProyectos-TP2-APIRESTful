@@ -15,7 +15,6 @@ namespace AprobacionProyectos.Application.Interfaces
         Task<List<ProjectApprovalStep>> GetApprovalStepsByProposalIdAsync(Guid proposalId);
         Task<User?> GetApproverUserByStepIdAsync(int approverUserId);
         Task<ProjectProposal?> GetProjectProposalByTitle(string title);
-
         IQueryable<ProjectProposal> GetProjectProposalQueryable();
         
 

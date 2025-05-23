@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
 {
@@ -11,5 +12,6 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
     {
         Task<List<ApproverRole>> GetAllAsync();
         Task<ApproverRole> GetByIdAsync(int id);
+        Task<bool> ExistsAsync(int id);
     }
 }

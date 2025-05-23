@@ -13,6 +13,7 @@ namespace AprobacionProyectos.Application.Interfaces
         Task<bool> IsUserInAnyRoleAsync(int userId, List<ApproverRole> roleNames);        
         Task<int> CreateUser (string name, string email, ApproverRole role);
         Task<User?> GetUserByIdAsync(int userId);
+        Task<List<User>> GetAllUsersAsync();
+        Task<bool> ExistsAsync(int id);
     }
-
 }

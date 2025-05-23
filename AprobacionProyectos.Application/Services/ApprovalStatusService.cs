@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Application.Interfaces;
 using AprobacionProyectos.Domain.Entities;
+using AprobacionProyectos.Infrastructure.Repositories.Implementations;
 using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
 
 namespace AprobacionProyectos.Application.Services
@@ -19,6 +20,16 @@ namespace AprobacionProyectos.Application.Services
         public async Task<ApprovalStatus> GetApprovalStatusByIdAsync(int id)
         {
             return await _aprrovalStatusRepository.GetByIdAsync(id);
+        }
+
+        public async Task<List<ApprovalStatus>> GetAllApprovalStatusesAsync()
+        {
+            return await _aprrovalStatusRepository.GetAllAsync();
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _aprrovalStatusRepository.ExistsAsync(id);
         }
     }
 }

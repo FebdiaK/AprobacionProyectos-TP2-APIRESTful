@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AprobacionProyectos.Application.DTOs.Request;
+using FluentValidation;
 
 namespace AprobacionProyectos.Application.Validators
 {
-    public class ProjectUpdateValidator
+    public class ProjectUpdateValidator  //AbstractValidator<>
+
     {
         public static List<string> Validate(string title, string description, int duration)
         {

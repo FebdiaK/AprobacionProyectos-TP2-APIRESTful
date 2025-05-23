@@ -26,5 +26,10 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
         {
             return await _context.ApprovalStatuses.FindAsync(id); 
         }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.ApprovalStatuses.AnyAsync(s => s.Id == id);
+        }
     }
 }

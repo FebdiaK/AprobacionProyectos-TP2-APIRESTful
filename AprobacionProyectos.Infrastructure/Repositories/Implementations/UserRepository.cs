@@ -19,7 +19,7 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<User> GetByIdAsync(int id) 
+        public async Task<User?> GetByIdAsync(int id)  
         {
             return await _context.Users
                 .Include(u => u.ApproverRole) 
@@ -28,12 +28,19 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
 
         public async Task<List<User>> GetAllAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Include(u => u.ApproverRole).
+                ToListAsync();
         }
 
         public async Task CreateAsync(User user)
         {
             await _context.Users.AddAsync(user);
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Users.AnyAsync(u => u.Id == id);
         }
     }
 }

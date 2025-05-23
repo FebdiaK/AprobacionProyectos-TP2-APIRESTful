@@ -10,6 +10,7 @@ namespace AprobacionProyectos.Application.Interfaces
     public interface IAreaService
     {
         Task<List<Area>> GetAllAreasAsync();
-       
+        Task<bool> ExistsAsync(int id);
+
     }
 }

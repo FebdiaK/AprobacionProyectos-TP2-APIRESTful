@@ -10,5 +10,6 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
     public interface IAreaRepository
     {
         Task<List<Area>> GetAllAsync();
+        Task<bool> ExistsAsync(int id);
     }
 }

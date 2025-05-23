@@ -9,6 +9,8 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
 {
     public interface IProjectTypeRepository
     {
-        Task<List<ProjectType>> GetAllAsync(); 
+        Task<List<ProjectType>> GetAllAsync();
+
+        Task<bool> ExistsAsync(int id);
     }
 }

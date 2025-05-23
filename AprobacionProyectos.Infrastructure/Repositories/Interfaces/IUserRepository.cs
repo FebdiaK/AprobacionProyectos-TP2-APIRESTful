@@ -9,8 +9,9 @@ namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User> GetByIdAsync(int id); 
+        Task<User?> GetByIdAsync(int id); 
         Task<List<User>> GetAllAsync();
         Task CreateAsync(User user);
+        Task<bool> ExistsAsync(int id);
     }
 }

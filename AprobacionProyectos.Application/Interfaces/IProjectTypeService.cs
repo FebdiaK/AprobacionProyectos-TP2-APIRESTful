@@ -10,5 +10,6 @@ namespace AprobacionProyectos.Application.Interfaces
     public interface IProjectTypeService
     {
         Task<List<ProjectType>> GetAllProjectTypesAsync();
+        Task<bool> ExistsAsync(int id);
     }
 }

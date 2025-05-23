@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Application.Interfaces;
 using AprobacionProyectos.Domain.Entities;
+using AprobacionProyectos.Infrastructure.Repositories.Implementations;
 using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
 
 namespace AprobacionProyectos.Application.Services
@@ -20,6 +21,11 @@ namespace AprobacionProyectos.Application.Services
         public Task<List<ProjectType>> GetAllProjectTypesAsync()
         {
             return _projectTypeRepository.GetAllAsync();
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _projectTypeRepository.ExistsAsync(id);
         }
     }
 }
