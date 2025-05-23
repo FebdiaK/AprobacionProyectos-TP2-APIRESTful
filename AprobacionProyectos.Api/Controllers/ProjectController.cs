@@ -142,13 +142,6 @@ namespace AprobacionProyectos.Api.Controllers
                 return BadRequest(new { message = "El ID del proyecto es inválido." });
             }
 
-            var validationErrors = ProjectUpdateValidator.Validate(dto.title, dto.description, dto.duration);
-
-            if (validationErrors.Any())
-            {
-                return BadRequest(new { message = "Datos de actualización inválidos" + "\n" + validationErrors });
-            }
-
             var projectProposal = await _queryService.GetProjectProposalFullWithId(guid);
 
             if (projectProposal == null)
