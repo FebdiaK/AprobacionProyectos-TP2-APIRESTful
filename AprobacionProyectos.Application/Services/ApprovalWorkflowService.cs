@@ -55,7 +55,14 @@ namespace AprobacionProyectos.Application.Services
 
             var allSteps = await _stepRepository.GetStepsByProposalIdAsync(step.ProjectProposalId);
             var currentStepIndex = allSteps.FindIndex(s => s.Id == stepId);
-            if (currentStepIndex == -1 || allSteps.Take(currentStepIndex).Any(s => s.StatusId == 1))
+
+            if (currentStepIndex == -1)
+                return false; // El paso no existe
+
+            // No se puede decidir si hay pasos anteriores que no estén aprobados
+            var previousSteps = allSteps.Take(currentStepIndex);
+            bool allPreviousApproved = previousSteps.All(s => s.StatusId == 2);
+            if (!allPreviousApproved)
                 return false;
 
             var status = await _statusRepository.GetByIdAsync(decisionStatusId); 

@@ -22,6 +22,7 @@ namespace AprobacionProyectos.Api.Controllers
         private readonly IApprovalWorkflowService _approveWorkflowService;
         private readonly IProjectProposalUpdateService _updaterService;
         private readonly IValidator<ProjectQueryRequestDto> _queryValidator;
+        private readonly IValidator<DecisionStepRequestDto> _decisionValidator;
 
 
         public ProjectController(
@@ -30,7 +31,8 @@ namespace AprobacionProyectos.Api.Controllers
             IUserService userService,
             IApprovalWorkflowService approveWorkflowService,
             IProjectProposalUpdateService updaterService,
-            IValidator<ProjectQueryRequestDto> queryValidator
+            IValidator<ProjectQueryRequestDto> queryValidator,
+            IValidator<DecisionStepRequestDto> decisionValidator
             )
         {
             _creatorService = creatorService;
@@ -39,6 +41,7 @@ namespace AprobacionProyectos.Api.Controllers
             _approveWorkflowService = approveWorkflowService;
             _updaterService = updaterService;
             _queryValidator = queryValidator;
+            _decisionValidator = decisionValidator;
         }
 
         [HttpPost] //criterio 1 : crear propuesta de proyecto
@@ -70,6 +73,7 @@ namespace AprobacionProyectos.Api.Controllers
         [HttpGet] // criterio 2
         public async Task<IActionResult> GetProjects([FromQuery] ProjectQueryRequestDto filter)  
         {
+
             var validationResult = await _queryValidator.ValidateAsync(filter); //valido los filtros
 
             if (!validationResult.IsValid)
@@ -96,6 +100,20 @@ namespace AprobacionProyectos.Api.Controllers
         [HttpPost("{id}/decision")] //criterio 3
         public async Task<IActionResult> MakeDecision(Guid id, [FromBody] DecisionStepRequestDto decision)
         {
+
+            var validation = await _decisionValidator.ValidateAsync(decision); //valido la decision
+            if (!validation.IsValid)
+            {
+                return BadRequest(new
+                {
+                    errors = validation.Errors
+                        .GroupBy(e => e.PropertyName) //para agrupar los errores de forma más legible
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(e => e.ErrorMessage).ToArray())
+                });
+            }
+
             // Validación opcional para verificar si el proyecto existe
             var projectProposal =  await _queryService.GetProjectProposalByIdAsync(id);
             if (projectProposal == null)

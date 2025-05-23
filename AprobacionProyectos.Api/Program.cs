@@ -18,7 +18,6 @@ using FluentValidation.AspNetCore;
 using AprobacionProyectos.Application.Validators;
 
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options =>
@@ -29,7 +28,7 @@ builder.Services.AddControllers(options =>
     {
         x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
-    
+
 
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectCreateValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectDecisionValidator>();
@@ -68,7 +67,6 @@ builder.Services.AddScoped<IProjectProposalQueryService, ProjectProposalQuerySer
 builder.Services.AddScoped<IProjectProposalUpdateService, ProjectProposalUpdateService>();
 builder.Services.AddScoped<IProjectTypeService, ProjectTypeService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
