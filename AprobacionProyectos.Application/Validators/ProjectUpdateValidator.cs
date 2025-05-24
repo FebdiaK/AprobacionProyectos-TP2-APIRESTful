@@ -16,14 +16,23 @@ namespace AprobacionProyectos.Application.Validators
                 .GreaterThan(0).WithMessage("La duración debe ser un número mayor de cero.");
 
             RuleFor(x => x.title)
-                .NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.title))
-                .MinimumLength(5).WithMessage("El título debe tener al menos 5 caracteres.")
-                .MaximumLength(200).WithMessage("El título no debe exceder los 200 caracteres.");
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("El nuevo título es obligatorio.")
+                .MinimumLength(5).WithMessage("El Título debe tener al menos 5 caracteres.")
+                .MaximumLength(100).WithMessage("El Título no puede superar los 100 caracteres.");
+
 
             RuleFor(x => x.description)
-                .NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.description))
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("Ingrese una descripción mínima.")
                 .MinimumLength(10).WithMessage("La descripción debe tener al menos 10 caracteres.")
-                .MaximumLength(1000).WithMessage("La descripción no debe exceder los 1000 caracteres.");
+                .MaximumLength(500).WithMessage("La descripción no puede superar los 500 caracteres."); 
+
+
+            RuleFor(x => x.duration)
+                .Cascade(CascadeMode.Stop)
+                .GreaterThan(0).WithMessage("La duración debe ser mayor a cero.")
+                .LessThanOrEqualTo(3650).WithMessage("La duración máxima permitida es de 10 años."); 
         }
     }
 }

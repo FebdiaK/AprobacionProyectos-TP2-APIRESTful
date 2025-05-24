@@ -19,7 +19,7 @@ namespace AprobacionProyectos.Application.Services
         }
 
         public async Task<ProjectProposal?> UpdateProjectProposalAsync(Guid id, string title, string description, int duration)
-        {
+        {  
             return await _proposalRepository.UpdateAsync( id,  title,  description,  duration);
         }
 

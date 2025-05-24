@@ -40,7 +40,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 
-ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Continue;
+ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Continue; //para que las validaciones de las entidades se hagan de manera cascada
 
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectCreateValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectDecisionValidator>();

@@ -26,18 +26,25 @@ namespace AprobacionProyectos.Application.Validators
 
 
             RuleFor(x => x.Title)
+                .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("El Título es obligatorio.")
-                .MinimumLength(5).WithMessage("El Título debe tener al menos 5 caracteres.");
+                .MinimumLength(5).WithMessage("El Título debe tener al menos 5 caracteres.")
+                .MaximumLength(100).WithMessage("El Título no puede superar los 100 caracteres.");
 
             RuleFor(x => x.Description)
+                .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Ingrese una descripción mínima.")
-                .MinimumLength(10).WithMessage("La descripción debe tener al menos 10 caracteres.");
+                .MinimumLength(10).WithMessage("La descripción debe tener al menos 10 caracteres.")
+                .MaximumLength(500).WithMessage("La descripción no puede superar los 500 caracteres."); ;
 
             RuleFor(x => x.Amount)
-                .GreaterThan(0).WithMessage("La cantidad debe ser mayor a cero.");
+                .GreaterThan(0).WithMessage("La cantidad debe ser mayor a cero.")
+                .LessThanOrEqualTo(10000000).WithMessage("El monto estimado no puede superar los $10.000.000.");
 
             RuleFor(x => x.Duration)
-                .GreaterThan(0).WithMessage("La duración debe ser mayor a cero.");
+                .Cascade(CascadeMode.Stop)
+                .GreaterThan(0).WithMessage("La duración debe ser mayor a cero.")
+                .LessThanOrEqualTo(3650).WithMessage("La duración máxima permitida es de 10 años."); 
 
             RuleFor(x => x.Area)
                 .GreaterThan(0).WithMessage("El área es obligatoria.");

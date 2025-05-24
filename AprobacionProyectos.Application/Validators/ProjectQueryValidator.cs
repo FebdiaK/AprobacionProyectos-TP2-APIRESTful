@@ -28,6 +28,7 @@ namespace AprobacionProyectos.Application.Validators
                 .WithMessage("El parámetro 'status' debe tener un ID existente.")
                 .When(x => x.status.HasValue);
 
+
             RuleFor(x => x.applicant)
                 .Must(x => !x.HasValue || x > 0)
                 .WithMessage("El parámetro 'applicant' debe ser mayor a cero o null.");
@@ -50,9 +51,8 @@ namespace AprobacionProyectos.Application.Validators
 
             RuleFor(x => x.title)
                 .MaximumLength(100)
-                .WithMessage("El parámetro 'title' no puede exceder los 100 caracteres.");
+                .WithMessage("El parámetro 'title' no puede exceder los 100 caracteres.")
+                .When(x => !string.IsNullOrEmpty(x.title)); 
         }
-
     }
-
 }

@@ -176,7 +176,19 @@ namespace AprobacionProyectos.Api.Controllers
                 return Conflict(new { message = "El proyecto ya no se encuentra en un estado que permite modificaciones" });
             }
 
+            var existingProject = await _queryService.GetProjectProposalByTitle(dto.title);
+
+            if (existingProject != null && existingProject.Id != guid) // Si el título ya existe y no es del mismo proyecto
+            {
+                return Conflict(new { message = "Ya existe un proyecto con ese título." });
+            }
+
             var updatedProposal = await _updaterService.UpdateProjectProposalAsync(guid, dto.title, dto.description, dto.duration);
+
+            if (updatedProposal == null)
+            {
+                return NotFound(new { message = "No se puede actualizar el proyecto con un titulo ya existente" });
+            }
 
             return Ok(ProjectProposalMapper.ToDto(updatedProposal)); 
         }
