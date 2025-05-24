@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -14,20 +15,16 @@ namespace AprobacionProyectos.Application.Validators
         {
             if (!context.ModelState.IsValid)
             {
-                var errors = context.ModelState
-                    .Where(e => e.Value.Errors.Count > 0)
-                    .ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                    );
-
-                context.Result = new BadRequestObjectResult(new
+                var problemDetails = new ValidationProblemDetails(context.ModelState)
                 {
-                    message = "Error de validación de datos",
-                    errors
-                });
+                    Title = "Error de validación de modelo",
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = "Uno o más datos enviados son inválidos.",
+                    Instance = context.HttpContext.Request.Path
+                };
+
+                context.Result = new BadRequestObjectResult(problemDetails);
             }
         }
     }
-
 }

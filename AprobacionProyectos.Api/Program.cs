@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using AprobacionProyectos.Api; 
 using Microsoft.AspNetCore.Http;
-using AprobacionProyectos.Api;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,12 +42,11 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Continue;
 
-builder.Services.AddValidatorsFromAssemblyContaining<ProjectCreateValidator2>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProjectCreateValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectDecisionValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectQueryValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectUpdateValidator>();
 
-builder.Services.AddScoped<IProjectValidator, ProjectCreateValidator>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

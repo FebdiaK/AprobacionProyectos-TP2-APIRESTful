@@ -9,7 +9,6 @@ using FluentValidation;
 namespace AprobacionProyectos.Application.Validators
 {
     public class ProjectUpdateValidator : AbstractValidator<UpdateProjectProposalRequestDto>
-
     {
         public ProjectUpdateValidator()
         {

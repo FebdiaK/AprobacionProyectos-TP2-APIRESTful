@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AprobacionProyectos.Application.DTOs.Request;
 using AprobacionProyectos.Application.Interfaces;
-using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
+using AprobacionProyectos.Application.DTOs.Request;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AprobacionProyectos.Application.Validators
 {
-    public class ProjectCreateValidator : IProjectValidator
+    public class ProjectCreateValidator : AbstractValidator<CreateProjectProposalRequestDto> 
     {
         private readonly IAreaService _areaService;
         private readonly IUserService _userService;
@@ -26,54 +23,46 @@ namespace AprobacionProyectos.Application.Validators
             _areaService = areaService;
             _userService = userService;
             _typeService = typeService;
-        }
-         
-        public async Task<Dictionary<string, List<string>>> ValidateAsync(CreateProjectProposalRequestDto dto)
-        {
-            var errors = new Dictionary<string, List<string>>();
 
-            AddErrorIf(dto.Title, string.IsNullOrWhiteSpace(dto.Title), "Title", "El Título es obligatorio.", errors);
-            AddErrorIf(dto.Amount, dto.Amount <= 0, "Amount", "La cantidad debe ser mayor a cero.", errors);
-            AddErrorIf(dto.Duration, dto.Duration <= 0, "Duration", "La duración debe ser mayor a cero.", errors);
 
-            await ValidateExistence(dto.Area, _areaService.ExistsAsync, "Area", "área", errors);
-            await ValidateExistence(dto.User, _userService.ExistsAsync, "User", "usuario", errors);
-            await ValidateExistence(dto.Type, _typeService.ExistsAsync, "Type", "tipo de proyecto", errors);
+            RuleFor(x => x.Title)
+                .NotEmpty().WithMessage("El Título es obligatorio.")
+                .MinimumLength(5).WithMessage("El Título debe tener al menos 5 caracteres.");
 
-            return errors;
-        }
+            RuleFor(x => x.Description)
+                .NotEmpty().WithMessage("Ingrese una descripción mínima.")
+                .MinimumLength(10).WithMessage("La descripción debe tener al menos 10 caracteres.");
 
-        private void AddErrorIf<T>(T value, bool condition, string propertyName, string errorMessage, Dictionary<string, List<string>> errors)
-        {
-            if (condition)
-            { 
-                if (!errors.ContainsKey(propertyName))
-                    errors[propertyName] = new List<string>();
+            RuleFor(x => x.Amount)
+                .GreaterThan(0).WithMessage("La cantidad debe ser mayor a cero.");
 
-                errors[propertyName].Add(errorMessage);
-            }
-        }
+            RuleFor(x => x.Duration)
+                .GreaterThan(0).WithMessage("La duración debe ser mayor a cero.");
 
-        private async Task ValidateExistence(
-            int id,
-            Func<int, Task<bool>> existsFunc,
-            string propertyName,
-            string entityName,
-            Dictionary<string, List<string>> errors)
-        {
-            if (id <= 0)
-            {
-                AddErrorIf(id, true, propertyName, $"Ingrese un {entityName} válido.", errors);
-                return;
-            }
+            RuleFor(x => x.Area)
+                .GreaterThan(0).WithMessage("El área es obligatoria.");
 
-            var exists = await existsFunc(id);
-            if (!exists)
-            {
-                AddErrorIf(id, true, propertyName, $"El {entityName} con ID {id} no existe.", errors);
-            }
+            RuleFor(x => x.Area)
+                .MustAsync(async (areaId, _) => await _areaService.ExistsAsync(areaId))
+                .WithMessage("Se debe pasar un área válida.")
+                .When(s => s.Area > 0);
+
+            RuleFor(x => x.User)
+                .GreaterThan(0).WithMessage("El usuario es obligatorio");
+
+            RuleFor(x => x.User)
+                .MustAsync(async (id, _) => await _userService.ExistsAsync(id))
+                .WithMessage("El usuario no existe, ingrese uno válido")
+                .When(x => x.User > 0);
+
+            RuleFor(x => x.Type)
+                .GreaterThan(0).WithMessage("El tipo de proyecto es obligatorio.");
+
+            RuleFor(x => x.Type)
+                .MustAsync(async (id, _) => await _typeService.ExistsAsync(id))
+                .WithMessage("El tipo de proyecto no existe, ingrese uno válido")
+                .When(x => x.Type > 0);
+
         }
     }
 }
-
-
