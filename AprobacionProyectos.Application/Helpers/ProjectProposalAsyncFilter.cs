@@ -32,7 +32,6 @@ namespace AprobacionProyectos.Application.Helpers
             {
                 query = query.Where(p => p.CreatedById == filter.applicant.Value);
             }
-             
 
             if (filter.approvalUser.HasValue)
             {

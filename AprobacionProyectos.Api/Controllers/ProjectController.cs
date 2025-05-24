@@ -23,6 +23,8 @@ namespace AprobacionProyectos.Api.Controllers
         private readonly IProjectProposalUpdateService _updaterService;
         private readonly IValidator<ProjectQueryRequestDto> _queryValidator;
         private readonly IValidator<DecisionStepRequestDto> _decisionValidator;
+        private readonly IValidator<CreateProjectProposalRequestDto> _createProjectProposalValidator;
+        private readonly IProjectValidator _createValidator; 
 
 
         public ProjectController(
@@ -32,8 +34,10 @@ namespace AprobacionProyectos.Api.Controllers
             IApprovalWorkflowService approveWorkflowService,
             IProjectProposalUpdateService updaterService,
             IValidator<ProjectQueryRequestDto> queryValidator,
-            IValidator<DecisionStepRequestDto> decisionValidator
-            )
+            IValidator<DecisionStepRequestDto> decisionValidator,
+            IProjectValidator createValidator
+,
+            IValidator<CreateProjectProposalRequestDto> createProjectProposalValidator)
         {
             _creatorService = creatorService;
             _queryService = queryService;
@@ -42,12 +46,47 @@ namespace AprobacionProyectos.Api.Controllers
             _updaterService = updaterService;
             _queryValidator = queryValidator;
             _decisionValidator = decisionValidator;
+            _createValidator = createValidator;
+            _createProjectProposalValidator = createProjectProposalValidator;
         }
 
         [HttpPost] //criterio 1 : crear propuesta de proyecto
-        public async Task<IActionResult> Create([FromBody] CreateProjectProposalRequestDto dto) 
+        public async Task<IActionResult> Create([FromBody] CreateProjectProposalRequestDto dto)
         {
-            
+            if (!ModelState.IsValid)
+            {
+                var modelErrors = ModelState
+                    .Where(ms => ms.Value.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                    );
+
+                return BadRequest(new
+                {
+                    Message = "Error en el formato de los datos",
+                    Errors = modelErrors
+                });
+            }
+
+            var validationResult = await _createProjectProposalValidator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new
+                {
+                    errors = validationResult.Errors
+                        .GroupBy(e => e.PropertyName) //para agrupar los errores de forma más legible
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(e => e.ErrorMessage).ToArray())
+                });
+            }
+
+            //var errors = await _createValidator.ValidateAsync(dto);
+
+            //if (errors.Any()){return BadRequest(new{message = "Datos del proyecto inválidos",Errors = errors});}
+
             var existing = await _queryService.GetProjectProposalByTitle(dto.Title); // no hay repeticion de títulos 
             if (existing != null)
             {
@@ -73,7 +112,6 @@ namespace AprobacionProyectos.Api.Controllers
         [HttpGet] // criterio 2
         public async Task<IActionResult> GetProjects([FromQuery] ProjectQueryRequestDto filter)  
         {
-
             var validationResult = await _queryValidator.ValidateAsync(filter); //valido los filtros
 
             if (!validationResult.IsValid)
@@ -97,7 +135,7 @@ namespace AprobacionProyectos.Api.Controllers
 
         }
 
-        [HttpPost("{id}/decision")] //criterio 3
+        [HttpPatch("{id}/decision")] //criterio 3
         public async Task<IActionResult> MakeDecision(Guid id, [FromBody] DecisionStepRequestDto decision)
         {
 

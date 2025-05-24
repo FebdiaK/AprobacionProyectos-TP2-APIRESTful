@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
+using System.Web.WebPages;
 using AprobacionProyectos.Application.DTOs.Request;
 using AprobacionProyectos.Application.Interfaces;
 using AprobacionProyectos.Domain.Entities;
 using AprobacionProyectos.Infrastructure.Data;
 using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
+using Azure.Core;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
@@ -98,6 +102,7 @@ namespace AprobacionProyectos.Application.Services
             if (user == null)
             {
                 return null;
+
             }
             return new ProjectProposal
             {

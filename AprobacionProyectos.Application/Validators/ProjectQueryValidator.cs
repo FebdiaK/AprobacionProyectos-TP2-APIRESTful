@@ -25,7 +25,7 @@ namespace AprobacionProyectos.Application.Validators
 
             RuleFor(x => x.status)
                 .MustAsync(async (id, _) => await _approvalStatusService.ExistsAsync(id!.Value))
-                .WithMessage("El parámetro 'applicant' debe ser un ID de usuario existente.")
+                .WithMessage("El parámetro 'status' debe tener un ID existente.")
                 .When(x => x.status.HasValue);
 
             RuleFor(x => x.applicant)

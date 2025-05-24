@@ -16,6 +16,11 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using AprobacionProyectos.Application.Validators;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using AprobacionProyectos.Api; 
+using Microsoft.AspNetCore.Http;
+using AprobacionProyectos.Api;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,12 +34,20 @@ builder.Services.AddControllers(options =>
         x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 
-builder.Services.AddValidatorsFromAssemblyContaining<ProjectCreateValidator>();
+
+ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Continue;
+
+builder.Services.AddValidatorsFromAssemblyContaining<ProjectCreateValidator2>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectDecisionValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectQueryValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectUpdateValidator>();
 
+builder.Services.AddScoped<IProjectValidator, ProjectCreateValidator>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -45,6 +58,8 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
 }));
 
 // Add services to the container
+
+
 
 //repositorios (interfaces e implementaciones)
 builder.Services.AddScoped<IApprovalRuleRepository, ApprovalRuleRepository>();
@@ -74,6 +89,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
