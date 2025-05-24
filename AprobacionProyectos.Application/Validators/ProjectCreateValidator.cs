@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AprobacionProyectos.Application.Interfaces;
 using AprobacionProyectos.Application.DTOs.Request;
 using FluentValidation;
+using AprobacionProyectos.Application.Interfaces.ServicesInterfaces;
 
 namespace AprobacionProyectos.Application.Validators
 {

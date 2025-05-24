@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.WebPages;
 using AprobacionProyectos.Application.DTOs.Request;
-using AprobacionProyectos.Application.Interfaces;
+using AprobacionProyectos.Application.Interfaces.ServicesInterfaces;
 using AprobacionProyectos.Domain.Entities;
-using AprobacionProyectos.Infrastructure.Data;
-using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
-using Azure.Core;
+using Azure.Core; 
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using AprobacionProyectos.Application.Interfaces.PersistenceInterfaces;
 
 namespace AprobacionProyectos.Application.Services
 {
@@ -24,14 +23,14 @@ namespace AprobacionProyectos.Application.Services
         private readonly IProjectApprovalStepRepository _stepRepository;
         private readonly IApprovalStatusRepository _approvalStatusRepository;
         private readonly IUserRepository _userRepository;
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         public ProjectProposalCreatorService(
             IProjectProposalRepository repository,
             IApprovalRuleRepository ruleRepository,
             IProjectApprovalStepRepository stepRepository,
             IApprovalStatusRepository approvalStatusRepository,
             IUserRepository userRepository,
-            AppDbContext context
+            IUnitOfWork unitOfWork
             )
         {
             _repository = repository;
@@ -39,7 +38,7 @@ namespace AprobacionProyectos.Application.Services
             _stepRepository = stepRepository;
             _approvalStatusRepository = approvalStatusRepository;
             _userRepository = userRepository;
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
         public async Task<Guid> CreateProjectProposalAsync(ProjectProposal proposal)
         {
@@ -90,7 +89,7 @@ namespace AprobacionProyectos.Application.Services
                 await _stepRepository.CreateAsync(step); //delego la creacion al repositorio
             }
 
-            await _context.SaveChangesAsync(); // guardo los cambios en la db
+            await _unitOfWork.SaveChangesAsync(); // guardo los cambios en la db
 
             return proposal.Id; //retorno el id de la propuesta creada
 

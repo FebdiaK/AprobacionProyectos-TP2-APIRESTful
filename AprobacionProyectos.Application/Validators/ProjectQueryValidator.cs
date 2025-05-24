@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Application.DTOs.Request;
-using AprobacionProyectos.Application.Interfaces;
-using FluentValidation; 
+using AprobacionProyectos.Application.Interfaces.ServicesInterfaces;
+using FluentValidation;
 
 namespace AprobacionProyectos.Application.Validators
 {

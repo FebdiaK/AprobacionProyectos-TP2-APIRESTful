@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
 
-namespace AprobacionProyectos.Application.Interfaces
+namespace AprobacionProyectos.Application.Interfaces.PersistenceInterfaces
 {
-    public interface IProjectTypeService
+    public interface IProjectTypeRepository
     {
-        Task<List<ProjectType>> GetAllProjectTypesAsync();
+        Task<List<ProjectType>> GetAllAsync();
+
         Task<bool> ExistsAsync(int id);
     }
 }

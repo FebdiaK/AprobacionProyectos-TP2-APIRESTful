@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AprobacionProyectos.Application.Interfaces;
-using AprobacionProyectos.Infrastructure.Data;
-using AprobacionProyectos.Infrastructure.Repositories.Implementations;
-using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
+using AprobacionProyectos.Application.Interfaces.ServicesInterfaces;
+using AprobacionProyectos.Application.Interfaces.PersistenceInterfaces;
+using AprobacionProyectos.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace AprobacionProyectos.Application.Services
 {
@@ -16,19 +16,19 @@ namespace AprobacionProyectos.Application.Services
         private readonly IProjectProposalRepository _proposalRepository;
         private readonly IApprovalStatusRepository _statusRepository;
         private readonly IUserRepository _userRepository;
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         public ApprovalWorkflowService(
             IProjectApprovalStepRepository stepRepository,
             IProjectProposalRepository proposalRepository,
             IApprovalStatusRepository statusRepository,
             IUserRepository userRepository,
-            AppDbContext context)
+            IUnitOfWork unitOfWork)
         {
             _stepRepository = stepRepository;
             _proposalRepository = proposalRepository;
             _statusRepository = statusRepository;
             _userRepository = userRepository;
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
         public async Task<bool> ApproveStepAsync(long stepId, int userId, int decisionStatusId, string? observations = null)
         {
@@ -55,14 +55,7 @@ namespace AprobacionProyectos.Application.Services
 
             var allSteps = await _stepRepository.GetStepsByProposalIdAsync(step.ProjectProposalId);
             var currentStepIndex = allSteps.FindIndex(s => s.Id == stepId);
-
-            if (currentStepIndex == -1)
-                return false; // El paso no existe
-
-            // No se puede decidir si hay pasos anteriores que no estén aprobados
-            var previousSteps = allSteps.Take(currentStepIndex);
-            bool allPreviousApproved = previousSteps.All(s => s.StatusId == 2);
-            if (!allPreviousApproved)
+            if (currentStepIndex == -1 || allSteps.Take(currentStepIndex).Any(s => s.StatusId == 1))
                 return false;
 
             var status = await _statusRepository.GetByIdAsync(decisionStatusId); 
@@ -91,7 +84,7 @@ namespace AprobacionProyectos.Application.Services
             }
             // Si el paso es observado, no se cambia el estado de la propuesta
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
     }

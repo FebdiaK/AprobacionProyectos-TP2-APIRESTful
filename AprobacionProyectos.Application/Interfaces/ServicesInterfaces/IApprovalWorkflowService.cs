@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AprobacionProyectos.Application.Interfaces
+namespace AprobacionProyectos.Application.Interfaces.ServicesInterfaces
 {
     public interface IApprovalWorkflowService
     {

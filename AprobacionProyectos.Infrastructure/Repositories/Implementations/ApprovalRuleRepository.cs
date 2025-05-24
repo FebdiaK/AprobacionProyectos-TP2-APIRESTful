@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
 using AprobacionProyectos.Infrastructure.Data;
-using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using AprobacionProyectos.Application.Interfaces.PersistenceInterfaces;
+
 
 namespace AprobacionProyectos.Infrastructure.Repositories.Implementations
 {

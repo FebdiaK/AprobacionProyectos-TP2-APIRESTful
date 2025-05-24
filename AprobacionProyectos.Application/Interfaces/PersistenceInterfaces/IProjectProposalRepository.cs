@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
 
-namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
+namespace AprobacionProyectos.Application.Interfaces.PersistenceInterfaces
 {
     public interface IProjectProposalRepository
     {

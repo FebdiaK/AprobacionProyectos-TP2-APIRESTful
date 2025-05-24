@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace AprobacionProyectos.Application.Interfaces
+namespace AprobacionProyectos.Application.Interfaces.PersistenceInterfaces
 {
-    public interface IApprovalStatusService
+    public interface IApproverRoleRepository
     {
-        Task<ApprovalStatus> GetApprovalStatusByIdAsync(int id);
-
-        Task<List<ApprovalStatus>> GetAllApprovalStatusesAsync();
-
+        Task<List<ApproverRole>> GetAllAsync();
+        Task<ApproverRole> GetByIdAsync(int id);
         Task<bool> ExistsAsync(int id);
-
     }
 }

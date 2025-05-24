@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore; 
 
-namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
-{
+namespace AprobacionProyectos.Application.Interfaces.PersistenceInterfaces 
+{ 
     public interface IApprovalStatusRepository
     {
         Task<List<ApprovalStatus>> GetAllAsync();

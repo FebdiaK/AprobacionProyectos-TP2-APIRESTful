@@ -2,7 +2,7 @@
 using AprobacionProyectos.Application.DTOs.Request;
 using AprobacionProyectos.Application.DTOs.Response;
 using AprobacionProyectos.Application.Helpers;
-using AprobacionProyectos.Application.Interfaces;
+using AprobacionProyectos.Application.Interfaces.ServicesInterfaces;
 using AprobacionProyectos.Application.Mappers;
 using AprobacionProyectos.Application.Validators;
 using AprobacionProyectos.Domain.Entities;

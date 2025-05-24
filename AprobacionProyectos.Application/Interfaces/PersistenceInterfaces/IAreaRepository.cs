@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
 
-namespace AprobacionProyectos.Application.Interfaces
+namespace AprobacionProyectos.Application.Interfaces.PersistenceInterfaces
 {
-    public interface IApproverRoleService
+    public interface IAreaRepository
     {
-        Task<List<ApproverRole>> GetAllApproverRolesAsync();
+        Task<List<Area>> GetAllAsync();
         Task<bool> ExistsAsync(int id);
     }
 }

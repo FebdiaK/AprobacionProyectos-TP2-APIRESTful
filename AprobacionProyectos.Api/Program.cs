@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Application.Services;
+using AprobacionProyectos.Application.Interfaces.ServicesInterfaces;
+using AprobacionProyectos.Application.Interfaces.PersistenceInterfaces;
 using AprobacionProyectos.Domain.Entities;
-using AprobacionProyectos.Infrastructure.Repositories.Interfaces; 
 using AprobacionProyectos.Infrastructure.Repositories.Implementations;
 using AprobacionProyectos.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using AprobacionProyectos.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json.Serialization;
 using FluentValidation;
@@ -18,7 +18,7 @@ using FluentValidation.AspNetCore;
 using AprobacionProyectos.Application.Validators;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using AprobacionProyectos.Api; 
+using AprobacionProyectos.Api;
 using Microsoft.AspNetCore.Http;
 
 
@@ -58,10 +58,8 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
 
 // Add services to the container
 
-
-
 //repositorios (interfaces e implementaciones)
-builder.Services.AddScoped<IApprovalRuleRepository, ApprovalRuleRepository>();
+builder.Services.AddScoped<IApprovalRuleRepository, ApprovalRuleRepository>(); 
 builder.Services.AddScoped<IApprovalStatusRepository, ApprovalStatusRepository>(); 
 builder.Services.AddScoped<IApproverRoleRepository, ApproverRoleRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
@@ -69,7 +67,7 @@ builder.Services.AddScoped<IProjectApprovalStepRepository, ProjectApprovalStepRe
 builder.Services.AddScoped<IProjectProposalRepository, ProjectProposalRepository>();
 builder.Services.AddScoped<IProjectTypeRepository, ProjectTypeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 //servicios de aplicacion
 builder.Services.AddScoped<IApprovalStatusService, ApprovalStatusService>();
@@ -82,13 +80,11 @@ builder.Services.AddScoped<IProjectProposalUpdateService, ProjectProposalUpdateS
 builder.Services.AddScoped<IProjectTypeService, ProjectTypeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

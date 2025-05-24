@@ -1,5 +1,5 @@
 ﻿using AprobacionProyectos.Application.DTOs.EntitiesDTOs;
-using AprobacionProyectos.Application.Interfaces;
+using AprobacionProyectos.Application.Interfaces.ServicesInterfaces;
 using AprobacionProyectos.Application.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

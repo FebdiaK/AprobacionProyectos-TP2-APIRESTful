@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AprobacionProyectos.Domain\AprobacionProyectos.Domain.csproj" />
+<ProjectReference Include="..\AprobacionProyectos.Application\AprobacionProyectos.Application.csproj" />
   </ItemGroup>
 
 	

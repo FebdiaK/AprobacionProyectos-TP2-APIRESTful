@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AprobacionProyectos.Application.Interfaces;
-using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
 using AprobacionProyectos.Domain.Entities;
+using AprobacionProyectos.Application.Interfaces.ServicesInterfaces;
+using AprobacionProyectos.Application.Interfaces.PersistenceInterfaces;
 
 namespace AprobacionProyectos.Application.Services
 {

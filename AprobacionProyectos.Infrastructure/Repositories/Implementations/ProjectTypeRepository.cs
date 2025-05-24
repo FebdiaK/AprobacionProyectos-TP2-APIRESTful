@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Infrastructure.Data;
-using AprobacionProyectos.Infrastructure.Repositories.Interfaces;
+using AprobacionProyectos.Application.Interfaces.PersistenceInterfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace AprobacionProyectos.Infrastructure.Repositories.Implementations

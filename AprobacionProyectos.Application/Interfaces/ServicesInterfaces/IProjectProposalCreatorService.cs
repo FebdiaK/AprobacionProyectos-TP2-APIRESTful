@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AprobacionProyectos.Application.DTOs.Request;
 using AprobacionProyectos.Domain.Entities;
 
-namespace AprobacionProyectos.Application.Interfaces
+namespace AprobacionProyectos.Application.Interfaces.ServicesInterfaces
 {
     public interface IProjectProposalCreatorService
     {

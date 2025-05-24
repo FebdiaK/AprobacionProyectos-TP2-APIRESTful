@@ -5,12 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
 
-namespace AprobacionProyectos.Application.Interfaces
+namespace AprobacionProyectos.Application.Interfaces.PersistenceInterfaces
 {
-    public interface IAreaService
+    public interface IApprovalRuleRepository
     {
-        Task<List<Area>> GetAllAreasAsync();
-        Task<bool> ExistsAsync(int id);
-
+        Task<List<ApprovalRule>> GetAllAsync();
     }
 }

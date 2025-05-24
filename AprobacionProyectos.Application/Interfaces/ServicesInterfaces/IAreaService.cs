@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
 
-namespace AprobacionProyectos.Infrastructure.Repositories.Interfaces
+namespace AprobacionProyectos.Application.Interfaces.ServicesInterfaces
 {
-    public interface IProjectTypeRepository
+    public interface IAreaService
     {
-        Task<List<ProjectType>> GetAllAsync();
-
+        Task<List<Area>> GetAllAreasAsync();
         Task<bool> ExistsAsync(int id);
+
     }
 }

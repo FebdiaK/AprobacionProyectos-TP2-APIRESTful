@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AprobacionProyectos.Domain.Entities;
 
-namespace AprobacionProyectos.Application.Interfaces
+namespace AprobacionProyectos.Application.Interfaces.ServicesInterfaces
 {
     public interface IProjectProposalUpdateService
     {
