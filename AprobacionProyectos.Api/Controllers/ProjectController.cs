@@ -53,34 +53,34 @@ namespace AprobacionProyectos.Api.Controllers
 
         [HttpPost] //criterio 1 : crear propuesta de proyecto 
         public async Task<IActionResult> Create([FromBody] CreateProjectProposalRequestDto dto)
-        {   
+        {
             var validationResult = await _createProjectProposalValidator.ValidateAsync(dto);
 
             if (!validationResult.IsValid)
                 return ValidationHelper.FromFluentValidationResult(validationResult);
 
-            var existing = await _queryService.GetProjectProposalByTitle(dto.Title); // no hay repeticion de títulos (consigna)
-            if (existing != null)
+            try
             {
-                return Conflict(new { message = "Ya existe un proyecto con ese título." });
+                var proposal = await _creatorService.BuildAsync(dto);  //creo el proyecto con el dto y valido si no hay duplicacion de titulos
+
+                var id = await _creatorService.CreateProjectProposalAsync(proposal); //creo el proyecto completo
+
+                var proposalCreated = await _queryService.GetProjectProposalFullWithId(id);
+
+                if (proposalCreated != null)
+                {
+                    return CreatedAtAction(nameof(GetById), new { id }, ProjectProposalMapper.ToDto(proposalCreated));
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
-
-            var proposal = await _creatorService.BuildAsync(dto);  //creo el proyecto con el dto
-
-            var id = await _creatorService.CreateProjectProposalAsync(proposal); //creo el proyecto completo
-
-            var proposalCreated = await _queryService.GetProjectProposalFullWithId(id); 
-
-            if (proposalCreated != null)
+            catch (InvalidOperationException ex)
             {
-                return CreatedAtAction(nameof(GetById), new { id }, ProjectProposalMapper.ToDto(proposalCreated)); 
-            }
-            else
-            {
-                return NotFound();
+                return Conflict(new { message = ex.Message }); //si hay un error de conflicto, retorno el mensaje de error
             }
         }
-
 
 
 
@@ -94,7 +94,7 @@ namespace AprobacionProyectos.Api.Controllers
 
             var query = _queryService.GetProjectProposalQueryable(); //obtengo la query de proyectos (IQueryable<ProjectProposal>)
 
-            var filteredQuery = await ProjectProposalAsyncFilter.ApplyFiltersAsync(query, filter, _userService);  //aplico los filtros a la query de proyectos
+            var filteredQuery = await ProjectProposalAsyncFilter.ApplyFiltersAsync(query, filter, _userService);   //aplico los filtros a la query de proyectos
 
             var result = await filteredQuery.Select(p => ProjectQueryMapper.ToDto(p)).ToListAsync();  
 
@@ -121,7 +121,7 @@ namespace AprobacionProyectos.Api.Controllers
 
             if (!success)
             {
-                return Conflict(new { message = "El proyecto ya no se encuentra en un estado que permite modificaciones" });
+                return Conflict(new { message = "El proyecto ya no se encuentra en un estado que permite modificaciones." });
             }
 
             var proposal = await _queryService.GetProjectProposalFullWithId(id);
@@ -137,7 +137,7 @@ namespace AprobacionProyectos.Api.Controllers
         {
             if (!Guid.TryParse(id, out var guid) || guid == Guid.Empty) //valido el guid 
             {
-                return BadRequest(new { message = "Id inválido" });
+                return BadRequest(new { message = "Id inválido." });
             }
 
             var proposal = await _queryService.GetProjectProposalFullWithId(guid);
@@ -158,39 +158,30 @@ namespace AprobacionProyectos.Api.Controllers
             if (!validationResult.IsValid)
                 return ValidationHelper.FromFluentValidationResult(validationResult);
 
-
             if (!Guid.TryParse(id, out var guid) || guid == Guid.Empty)  
             {
                 return BadRequest(new { message = "El ID del proyecto es inválido." });
             }
 
             var projectProposal = await _queryService.GetProjectProposalFullWithId(guid);
-
             if (projectProposal == null)
             {
                 return NotFound(new { message = "No se encontró un proyecto con ese ID." });
             }
 
-            if (projectProposal.Status.Id != 4 )  //solo se puede editar un proyecto en estado de observacion(parte de la consigna)
+            try
             {
-                return Conflict(new { message = "El proyecto ya no se encuentra en un estado que permite modificaciones" });
+                var updatedProposal = await _updaterService.UpdateProjectProposalAsync(guid, dto.title, dto.description, dto.duration);
+                if (updatedProposal == null)
+                {
+                    return NotFound(new { message = "Proyecto no encontrado para actualizar" });
+                }
+                return Ok(ProjectProposalMapper.ToDto(updatedProposal)); 
             }
-
-            var existingProject = await _queryService.GetProjectProposalByTitle(dto.title);
-
-            if (existingProject != null && existingProject.Id != guid) // Si el título ya existe y no es del mismo proyecto
+            catch (InvalidOperationException ex)
             {
-                return Conflict(new { message = "Ya existe un proyecto con ese título." });
+                return Conflict(new { message = ex.Message });
             }
-
-            var updatedProposal = await _updaterService.UpdateProjectProposalAsync(guid, dto.title, dto.description, dto.duration);
-
-            if (updatedProposal == null)
-            {
-                return NotFound(new { message = "No se puede actualizar el proyecto con un titulo ya existente" });
-            }
-
-            return Ok(ProjectProposalMapper.ToDto(updatedProposal)); 
         }
     }
 }

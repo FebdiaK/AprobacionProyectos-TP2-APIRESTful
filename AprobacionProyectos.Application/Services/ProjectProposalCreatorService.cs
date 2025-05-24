@@ -97,6 +97,13 @@ namespace AprobacionProyectos.Application.Services
 
         public async Task<ProjectProposal?> BuildAsync(CreateProjectProposalRequestDto dto)
         {
+            var existing = await _repository.GetProjectProposalByTitle(dto.Title);
+
+            if (existing != null)
+            {
+                throw new InvalidOperationException("Ya existe un proyecto con ese título.");  // No se permite crear una propuesta con un título ya existente
+            }
+
             var user = await _userRepository.GetByIdAsync(dto.User);
             if (user == null)
             {
