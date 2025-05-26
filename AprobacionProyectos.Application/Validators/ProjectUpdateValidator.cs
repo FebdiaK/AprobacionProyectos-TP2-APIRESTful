@@ -12,9 +12,7 @@ namespace AprobacionProyectos.Application.Validators
     {
         public ProjectUpdateValidator()
         {
-            RuleFor(x => x.duration)
-                .GreaterThan(0).WithMessage("La duración debe ser un número mayor de cero.");
-
+            
             RuleFor(x => x.title)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("El nuevo título es obligatorio.")

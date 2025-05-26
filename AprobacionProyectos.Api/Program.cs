@@ -21,8 +21,6 @@ using System.Text.Json;
 using AprobacionProyectos.Api;
 using Microsoft.AspNetCore.Http;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options =>
@@ -39,16 +37,15 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-
 ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Continue; //para que las validaciones de las entidades se hagan de manera cascada
 
+//agrego las validaciones
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectCreateValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectDecisionValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectQueryValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProjectUpdateValidator>();
 
-
-
+//agrego la base de datos
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString, sqlOptions =>
 {
@@ -56,7 +53,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
     sqlOptions.MigrationsAssembly("AprobacionProyectos.Infrastructure");
 }));
 
-// Add services to the container
+// agrego servicios
 
 //repositorios (interfaces e implementaciones)
 builder.Services.AddScoped<IApprovalRuleRepository, ApprovalRuleRepository>(); 
@@ -80,13 +77,11 @@ builder.Services.AddScoped<IProjectProposalUpdateService, ProjectProposalUpdateS
 builder.Services.AddScoped<IProjectTypeService, ProjectTypeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -98,5 +93,12 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//aplico las migraciones automáticamente al iniciar la aplicación (y creo la base de datos si no existe aún)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();
