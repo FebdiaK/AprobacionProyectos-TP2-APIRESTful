@@ -97,6 +97,8 @@ Information:
 - Materia: Proyecto de Software
 - Universidad Nacional Arturo Jauretche
 
+---
+
 ## Notas
 
 - Este proyecto es un trabajo académico.
