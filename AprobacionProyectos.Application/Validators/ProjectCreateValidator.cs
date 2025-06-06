@@ -34,7 +34,7 @@ namespace AprobacionProyectos.Application.Validators
             RuleFor(x => x.Description)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Ingrese una descripción mínima.")
-                .MinimumLength(10).WithMessage("La descripción debe tener al menos 10 caracteres.")
+                //.MinimumLength(10).WithMessage("La descripción debe tener al menos 10 caracteres.")
                 .MaximumLength(500).WithMessage("La descripción no puede superar los 500 caracteres."); ;
 
             RuleFor(x => x.Amount)
