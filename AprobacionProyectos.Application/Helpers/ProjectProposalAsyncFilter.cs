@@ -33,14 +33,14 @@ namespace AprobacionProyectos.Application.Helpers
                 query = query.Where(p => p.CreatedById == filter.applicant.Value);
             }
 
-            if (filter.approvalUser.HasValue)
+            if (filter.approvalUser.HasValue)  //ahora necesito los proyectos donde el user puede participar Y PARTICIPÓ, por ende:
             {
                 var user = await userService.GetUserByIdAsync(filter.approvalUser.Value);
 
                 query = query.Where(p =>
                     p.ApprovalSteps.Any(s =>
-                        s.ApproverRoleId == user.ApproverRole.Id &&
-                        (s.Status.Id == 1 || s.Status.Id == 4)
+                        s.ApproverRoleId == user.ApproverRole.Id
+                        //&& (s.Status.Id == 1 || s.Status.Id == 4)
                     ));
             }
 
