@@ -70,7 +70,13 @@ namespace AprobacionProyectos.Application.Services
                 return false;
 
             step.StatusId = status.Id; //actualizamos el paso con la decision
-            step.DecisionDate = DateTime.UtcNow;
+
+            TimeZoneInfo argentinaTimeZone;
+            if (OperatingSystem.IsWindows()) { argentinaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time"); }
+            else { argentinaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Argentina/Buenos_Aires"); }
+
+            step.DecisionDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, argentinaTimeZone);
+
             step.Observations = observations;
             step.ApproverUserId = userId;
            

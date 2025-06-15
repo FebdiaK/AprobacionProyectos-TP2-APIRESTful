@@ -42,8 +42,11 @@ namespace AprobacionProyectos.Application.Services
         }
         public async Task<Guid> CreateProjectProposalAsync(ProjectProposal proposal)
         {
+            TimeZoneInfo argentinaTimeZone;
+            if (OperatingSystem.IsWindows()) { argentinaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time"); }
+            else {argentinaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Argentina/Buenos_Aires");}
 
-            proposal.CreatedAt = DateTime.UtcNow;
+            proposal.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, argentinaTimeZone);
 
             var pendingStatus = await _approvalStatusRepository.GetByIdAsync(1);
             proposal.StatusId = pendingStatus.Id;

@@ -20,6 +20,7 @@ namespace AprobacionProyectos.Application.Mappers
                 Description = proposal.Description,
                 Amount = proposal.EstimatedAmount,
                 Duration = proposal.EstimatedDuration,
+                CreatedAt = proposal.CreatedAt,
                 Area = new AreaDto { Id = proposal.Area.Id, Name = proposal.Area.Name },
                 Status = new StatusDto { Id = proposal.Status.Id, Name = proposal.Status.Name },
                 Type = new TypeDto { Id = proposal.Type.Id, Name = proposal.Type.Name },

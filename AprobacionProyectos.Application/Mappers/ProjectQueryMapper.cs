@@ -19,6 +19,7 @@ namespace AprobacionProyectos.Application.Mappers
                 Description = p.Description,
                 Amount = p.EstimatedAmount,
                 Duration = p.EstimatedDuration,
+                CreatedAt = p.CreatedAt,
                 Area = p.Area.Name,
                 Status = p.Status.Name,
                 Type = p.Type.Name

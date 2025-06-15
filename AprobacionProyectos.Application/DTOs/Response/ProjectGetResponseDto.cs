@@ -14,6 +14,7 @@ namespace AprobacionProyectos.Application.DTOs.Response
         public string Description { get; set; } = null!;
         public decimal Amount { get; set; }
         public int Duration { get; set; }
+        public DateTime CreatedAt { get; set; }
         public string Area { get; set; } = null!;
         public string Status { get; set; } = null!;
         public string Type { get; set; } = null!;
